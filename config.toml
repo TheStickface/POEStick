@@ -1,0 +1,55 @@
+# ──────────────────────────────────────────────────────────────────
+# POEStick Configuration
+# ──────────────────────────────────────────────────────────────────
+
+[general]
+# Default to Mirage (auto-detect API is currently offline)
+league = "Mirage"
+# How often to refresh data (seconds). Minimum 20 to respect API limits but allow fast sniping.
+refresh_interval = 20
+
+[filters]
+# Minimum total listings (buy + sell) to consider an opportunity
+min_listings = 10
+# Minimum margin percentage to display
+min_margin_pct = 1.0
+# Number of top opportunities to show
+top_n = 15
+# Default sort order: "profit" (chaos per trade), "margin", or "confidence"
+sort_by = "profit"
+
+[analysis]
+# Slippage buffer — subtract this % from raw spread to be conservative
+slippage_pct = 2.0
+# Enable multi-hop arbitrage detection (Chaos → X → Y → Chaos)
+multi_hop_enabled = true
+# Maximum hops for cycle detection (2 or 3 recommended)
+max_hops = 3
+# Extra root currencies for multi-hop cycle detection.
+# In 3.28 Mirage, Chaos sinks were removed (Map Device, T17s removed).
+# Exalted and Regal drop rates doubled — Divine/Exalted cycles may be profitable.
+multi_hop_extra_roots = ["Divine Orb", "Exalted Orb"]
+# Mirage encounter multiplier: the Mirage mechanic can duplicate encounters
+# (Breach, Expedition, Harvest, Ultimatum). Apply this multiplier to ROI
+# estimates in affected analyzers. Set to 1.0 to disable.
+mirage_encounter_multiplier = 1.5
+
+[alerts]
+# Margin % above which an opportunity triggers an alert highlight
+margin_threshold = 100.0
+# Play a terminal bell sound on new high-margin opportunities
+sound_enabled = true
+
+[history]
+# Path to SQLite database for historical tracking
+db_path = "poestick_history.db"
+
+[pro]
+# Automatically copy the item name to your clipboard when a new snipe appears
+auto_copy_snipes = true
+# Show a Windows Desktop notification when a new snipe appears
+desktop_notifications = true
+# Array of item names to always ignore (e.g. ["Scroll of Wisdom", "Portal Scroll"])
+ignore_items = []
+# Array of exactly which items to monitor. If empty, monitors everything.
+target_items = []
