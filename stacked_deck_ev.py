@@ -42,15 +42,18 @@ def analyze_stacked_deck_ev(
     db_conn: sqlite3.Connection,
     console: Optional[Console] = None,
     cloister_scarab_cost: float = 0.0,
+    mirage_multiplier: float = 1.0,
 ) -> StackedDeckResult:
     """
     Fetch all Divination Card prices and apply heuristic weights to find EV.
 
     If cloister_scarab_cost > 0, also calculates adjusted cost-per-deck
     for the Divination Scarab of The Cloister farming strategy.
-    Heuristic: Cloister Scarab yields ~25 extra Stacked Decks per map.
+    Heuristic: Cloister Scarab yields ~85 Stacked Decks per map (midpoint of
+    80-100 community reports from week-1 Mirage). Mirage may double-spawn
+    Cloister packs — apply mirage_multiplier to the deck yield if confirmed.
     """
-    CLOISTER_DECKS_PER_MAP = 25.0
+    CLOISTER_DECKS_PER_MAP = 85.0
     url = f"https://poe.ninja/api/data/itemoverview?league={league}&type=DivinationCard"
     data = fetch_json(url, "DivinationCard", console)
     lines: List[Dict[str, Any]] = data.get("lines", [])
@@ -115,12 +118,13 @@ def analyze_stacked_deck_ev(
             
     deck_price = get_safe_price(db_conn, "Stacked Deck", raw_deck_price)
 
-    # Cloister Scarab adjusted metrics
+    # Cloister Scarab adjusted metrics (Mirage may double-spawn Cloister packs)
     cost_per_deck_with_scarab = 0.0
     profit_per_deck_with_scarab = 0.0
-    if cloister_scarab_cost > 0 and CLOISTER_DECKS_PER_MAP > 0:
-        # Scarab cost amortized over the decks it generates
-        cost_per_deck_with_scarab = float(deck_price + cloister_scarab_cost / CLOISTER_DECKS_PER_MAP)
+    effective_decks = CLOISTER_DECKS_PER_MAP * mirage_multiplier
+    if cloister_scarab_cost > 0 and effective_decks > 0:
+        # Scarab cost amortized over the decks it generates (Mirage-adjusted)
+        cost_per_deck_with_scarab = float(deck_price + cloister_scarab_cost / effective_decks)
         profit_per_deck_with_scarab = float(ev - cost_per_deck_with_scarab)
 
     return {
@@ -130,7 +134,7 @@ def analyze_stacked_deck_ev(
         "margin_pct": float(((ev - deck_price) / deck_price * 100) if deck_price > 0 else 0.0),
         "tier_data": tier_averages,
         "cloister_scarab_cost": float(cloister_scarab_cost),
-        "decks_per_map": CLOISTER_DECKS_PER_MAP,
+        "decks_per_map": effective_decks,
         "cost_per_deck_with_scarab": cost_per_deck_with_scarab,
         "profit_per_deck_with_scarab": profit_per_deck_with_scarab,
     }

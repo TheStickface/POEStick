@@ -32,6 +32,8 @@ examples:
   python main.py --scarab-tiers         # scarab per-family tier analysis
   python main.py --stacked-deck         # stacked deck ev calculator
   python main.py --scarabs              # scarab set aggregator
+  python main.py --harvest              # harvest lifeforce + catalyst prices + Cornucopia ROI
+  python main.py --strongbox            # operative strongbox ROI (Mirage scarab drops)
   python main.py --supply-shock         # detect supply drops/surges across all categories
   python main.py --fossils              # fossil price index + delve ROI (3.28 meta)
   python main.py --astrolabes          # astrolabe -> memory vault ROI (3.28 new)
@@ -157,6 +159,16 @@ examples:
         "--scarab-tiers",
         action="store_true",
         help="Analyze per-family Scarab tier pricing and spreads",
+    )
+    parser.add_argument(
+        "--harvest",
+        action="store_true",
+        help="Harvest lifeforce + catalyst prices + Cornucopia ROI (Mirage-multiplied)",
+    )
+    parser.add_argument(
+        "--strongbox",
+        action="store_true",
+        help="Strongbox → Operative Strongbox ROI (Mirage conversion, scarab drops)",
     )
     parser.add_argument(
         "--supply-shock",

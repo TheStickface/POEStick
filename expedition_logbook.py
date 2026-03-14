@@ -61,6 +61,7 @@ def analyze_logbooks(
     league: str,
     db_conn: sqlite3.Connection,
     console: Optional[Console] = None,
+    mirage_multiplier: float = 1.0,
 ) -> list[LogbookEntry]:
     """
     Fetch Logbook prices and estimate profit per run.
@@ -124,8 +125,9 @@ def analyze_logbooks(
         lb_price = lb_data["price"]
         listings = lb_data["listings"]
 
-        # Base EV from average currency drops
-        ev = faction_info["avg_currency_drops"]
+        # Base EV from average currency drops, scaled by Mirage multiplier
+        # (Mirage can spawn a second Expedition encounter per map)
+        ev = faction_info["avg_currency_drops"] * mirage_multiplier
 
         # Add bonus from expedition currency prices (Tujen/Gwennen markup)
         npc = faction_info["npc"]
@@ -199,4 +201,5 @@ def print_logbook_table(entries: list[LogbookEntry], console: Console, limit: in
 
     console.print(table)
     console.print("[dim]🎰 = Gwennen gamble chance (Mageblood/HH). EV is average without jackpots.[/dim]")
+    console.print("[dim]EV scaled by Mirage encounter multiplier (Mirage can spawn a second Expedition per map).[/dim]")
     console.print("[dim]Returns depend on atlas passives, remnant mods, and expedition currency prices.[/dim]")

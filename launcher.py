@@ -83,6 +83,8 @@ class POEStickLauncher(ctk.CTk):
         btn("⛏️  Fossil Price Index + Delve ROI",    self.launch_fossils,         highlight=True)
         btn("🌐  Astrolabe → Memory Vault ROI",       self.launch_astrolabes,      highlight=True)
         btn("🏰  Breach Fortress Combo Analyzer",     self.launch_breach_fortress, highlight=True)
+        btn("🌿  Harvest + Lifeforce + Catalysts",   self.launch_harvest,         highlight=True)
+        btn("📦  Strongbox → Operative ROI",          self.launch_strongbox,       highlight=True)
 
         # ── Market Arbitrage ─────────────────────────────────────────────────
         section("Market Arbitrage")
@@ -141,6 +143,8 @@ class POEStickLauncher(ctk.CTk):
 
     # ── 3.28 New ─────────────────────────────────────────────────────────────
 
+    def launch_harvest(self):          self._run("--harvest")
+    def launch_strongbox(self):        self._run("--strongbox")
     def launch_fossils(self):          self._run("--fossils")
     def launch_astrolabes(self):       self._run("--astrolabes")
     def launch_breach_fortress(self):  self._run("--breach-fortress")

@@ -249,7 +249,8 @@ def build_dashboard(
         "Data from poe.ninja  │  "
         "Flip Calc = volume × buy→profit  │  "
         "🆕 SNIPE = new this scan  │  "
-        "⏳ STALE = 5+ scans at high margin[/dim]"
+        "⏳ STALE = 5+ scans at high margin  │  "
+        "[yellow]⚠ 3.28: Chaos Orb devaluing (Map Device + T17 sinks removed) — verify Divine rates[/yellow][/dim]"
     )
     parts.append(Text.from_markup(footer_text))
 

@@ -70,9 +70,12 @@ def analyze_delirium_orbs(
     league: str,
     db_conn: sqlite3.Connection,
     console: Optional[Console] = None,
+    mirage_multiplier: float = 1.0,
 ) -> list[DeliriumOrbEntry]:
     """
     Fetch Delirium Orb prices and calculate estimated profit per orb.
+    mirage_multiplier: apply to reward estimates (Mirage can double the
+    Delirium encounter, effectively doubling reward value per map).
     """
     url = f"https://poe.ninja/api/data/itemoverview?league={league}&type=DeliriumOrb"
     data = fetch_json(url, "DeliriumOrb", console)
@@ -90,8 +93,8 @@ def analyze_delirium_orbs(
 
         orb_price = get_safe_price(db_conn, name, raw_price)
 
-        # Get estimated reward value — use hardcoded calibration or a default
-        est_reward = ORB_AVG_REWARD_VALUE.get(name, 8.0)
+        # Get estimated reward value, scaled by Mirage encounter multiplier
+        est_reward = ORB_AVG_REWARD_VALUE.get(name, 8.0) * mirage_multiplier
 
         profit = est_reward - orb_price
         roi = (profit / orb_price * 100) if orb_price > 0 else 0
@@ -145,5 +148,5 @@ def print_delirium_orb_table(entries: list[DeliriumOrbEntry], console: Console, 
         )
 
     console.print(table)
-    console.print("[dim]Reward estimates are community-calibrated averages for Mirage league.[/dim]")
+    console.print("[dim]Reward estimates are community-calibrated averages × Mirage encounter multiplier.[/dim]")
     console.print("[dim]Actual returns depend on map tier, atlas passives, and delirium reward stacking.[/dim]")

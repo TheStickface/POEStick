@@ -38,6 +38,8 @@ from supply_shock import (
     init_listing_db, record_listings, detect_shocks,
     extract_snapshot, run_supply_shock_scan, print_shock_table,
 )
+from harvest_analyzer import analyze_harvest, print_harvest_table
+from strongbox_analyzer import analyze_strongbox, print_strongbox_table
 from fossil_arbitrage import analyze_fossils, print_fossil_table
 from astrolabe_analyzer import analyze_astrolabes, print_astrolabe_table
 from breach_fortress import analyze_breach_fortress, print_breach_fortress_table
@@ -418,7 +420,9 @@ def main():
                         break
             except Exception:
                 pass
-            result = analyze_stacked_deck_ev(league, db_conn, console=console, cloister_scarab_cost=cloister_cost)
+            result = analyze_stacked_deck_ev(league, db_conn, console=console,
+                                            cloister_scarab_cost=cloister_cost,
+                                            mirage_multiplier=config.mirage_encounter_multiplier)
         print_stacked_deck_table(result, console)
         return
 
@@ -432,7 +436,8 @@ def main():
     # --- Delirium Orb Mode ---
     if hasattr(args, 'delirium_orbs') and args.delirium_orbs:
         with console.status("[bold magenta]Scanning Delirium Orbs...", spinner="dots"):
-            orbs = analyze_delirium_orbs(league, db_conn, console=console)
+            orbs = analyze_delirium_orbs(league, db_conn, console=console,
+                                         mirage_multiplier=config.mirage_encounter_multiplier)
         print_delirium_orb_table(orbs, console, limit=top_n)
         return
 
@@ -453,7 +458,8 @@ def main():
     # --- Expedition Logbook Mode ---
     if hasattr(args, 'logbooks') and args.logbooks:
         with console.status("[bold yellow]Analyzing Logbooks...", spinner="dots"):
-            entries = analyze_logbooks(league, db_conn, console=console)
+            entries = analyze_logbooks(league, db_conn, console=console,
+                                       mirage_multiplier=config.mirage_encounter_multiplier)
         print_logbook_table(entries, console, limit=top_n)
         return
 
@@ -462,6 +468,28 @@ def main():
         with console.status("[bold yellow]Analyzing Scarab Tiers...", spinner="dots"):
             family_map = analyze_scarab_tiers(league, db_conn, console=console)
         print_scarab_tier_table(family_map, console)
+        return
+
+    # --- Harvest Analyzer Mode ---
+    if hasattr(args, 'harvest') and args.harvest:
+        with console.status("[bold green]Analyzing Harvest prices...", spinner="dots"):
+            lifeforce, catalysts, roi = analyze_harvest(
+                league, db_conn,
+                mirage_multiplier=config.mirage_encounter_multiplier,
+                console=console,
+            )
+        print_harvest_table(lifeforce, catalysts, roi, console, limit=top_n)
+        return
+
+    # --- Strongbox Analyzer Mode ---
+    if hasattr(args, 'strongbox') and args.strongbox:
+        with console.status("[bold yellow]Analyzing Strongbox ROI...", spinner="dots"):
+            result = analyze_strongbox(
+                league, db_conn,
+                mirage_multiplier=config.mirage_encounter_multiplier,
+                console=console,
+            )
+        print_strongbox_table(result, console)
         return
 
     # --- Supply Shock Detector Mode ---
